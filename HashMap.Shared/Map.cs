@@ -1,29 +1,37 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Linq;
 
 namespace HashTableShared {
     public class Element {
-        public string key = "";
-        public string value = "";
+        public string Key { get; set; } = "";
+        public string Value { get; set; } = "";
 
         public Element(string key = "", string value = "") {
-            this.key = key;
-            this.value = value;
+            Key = key;
+            Value = value;
+        }
+
+        public override bool Equals(object obj) {
+            return obj is Element element &&
+                   Key == element.Key &&
+                   Value == element.Value;
         }
     }
 
     public class HashTable {
-        List<List<Element>> table;
-        public int Size { get; }
 
+        public IEnumerable<Element> Elements => table?.Where(item => item.Count != 0).SelectMany(item => item).ToList();
+
+        List<List<Element>> table;
+        private int Size { get; }
 
         public HashTable(int inputSize = 1000) {
             Size = inputSize;
             table = new List<List<Element>>(inputSize);
             while (inputSize-- != 0) {
-                table.Add(new List<Element> { new Element() });
+                table.Add(new List<Element> ());
             }
         }
 
@@ -50,18 +58,18 @@ namespace HashTableShared {
         }
 
         private void Add(Element toAdd) {
-            KeyIsCorrect(toAdd.key);
+            KeyIsCorrect(toAdd.Key);
 
             var count = 0;
             while (count != Size * 3) {
-                if (table[HashCode(toAdd.key, count)][0].key == toAdd.key) {
-                    table[HashCode(toAdd.key, count)].Add(toAdd);
+                if ((table[HashCode(toAdd.Key, count)].Count == 0 || table[HashCode(toAdd.Key, count)][0].Key == toAdd.Key)) {
+                    table[HashCode(toAdd.Key, count)].Add(toAdd);
                     break;
                 }
                 // В этой строке поменять == на !=
 
-                if (table[HashCode(toAdd.key, count)][0].key == "") {
-                    table[HashCode(toAdd.key, count)][0] = toAdd;
+                if (table[HashCode(toAdd.Key, count)][0].Key == "") {
+                    table[HashCode(toAdd.Key, count)][0] = toAdd;
                     break;
                 }
                 count++;
@@ -81,7 +89,7 @@ namespace HashTableShared {
 
                 var count = 0;
                 while (count != Size * 3) {
-                    if (table[HashCode(key, count)][0].key == key) {
+                    if (table[HashCode(key, count)][0].Key == key) {
                         break;
                     }
 
@@ -92,7 +100,7 @@ namespace HashTableShared {
                     throw new CheckoutException();
                 }
 
-                return table[HashCode(key, count)].FirstOrDefault()?.value;
+                return table[HashCode(key, count)].FirstOrDefault()?.Value;
             }
         }
     }
