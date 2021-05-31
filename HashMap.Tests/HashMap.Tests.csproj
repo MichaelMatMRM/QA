@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\HashMap.Shared\HashMap.Shared.csproj" />
+    <ProjectReference Include="..\REST\REST.csproj" />
   </ItemGroup>
 
 </Project>
